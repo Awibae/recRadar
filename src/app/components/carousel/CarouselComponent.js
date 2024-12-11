@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Image from 'next/image';
 import StarRatingComponent from '../starrating/StarRatingComponent';
@@ -8,22 +8,28 @@ import { mediaAtom } from "@/app/atomStore";
 import { useRouter } from 'next/navigation';
 
 const CarouselComponent = ({ mediaNames }) => {
-  const [selectedIndex, setSelectedIndex] = useState(Math.floor(Math.min(mediaNames.length - 1, mediaNames.length / 2)));
-  const [hoveredIndex, setHoveredIndex] = useState(undefined);
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentMediaItem, setCurrentMediaItem] = useState(null);
+  const router = useRouter();
+  const [mediaState, setMediaState] = useAtom(mediaAtom);
   const carouselRef = useRef(null);
   const popupRef = useRef(null);
 
-  const [mediaState, setMediaState] = useAtom(mediaAtom);
+  // Memoize filtered media to avoid recalculating on every render
+  const media = useMemo(() => 
+    mediaState.filter((mediaItem) => mediaNames.includes(mediaItem.title)),
+    [mediaState, mediaNames]
+  );
 
-  const router = useRouter();
+  // Initialize state with memoized media
+  const [selectedIndex, setSelectedIndex] = useState(() => 
+    Math.floor(Math.min(media.length - 1, media.length / 2))
+  );
+  const [hoveredIndex, setHoveredIndex] = useState(undefined);
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentMediaItem, setCurrentMediaItem] = useState(null);
 
-  const media = mediaState.filter((mediaItem) => mediaNames.includes(mediaItem.title));
-  // Add click outside handler
+  // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if popup is open and click is outside both carousel and popup
       if (
         showPopup && 
         carouselRef.current && 
@@ -35,15 +41,13 @@ const CarouselComponent = ({ mediaNames }) => {
       }
     };
 
-    // Add event listener to document
     document.addEventListener('mousedown', handleClickOutside);
-    
-    // Cleanup listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showPopup]);
 
+  // Scroll to center effect
   useEffect(() => {
     const carousel = carouselRef.current;
     if (carousel && carousel.children[selectedIndex]) {
@@ -93,28 +97,28 @@ const CarouselComponent = ({ mediaNames }) => {
     return Math.max(0.2, 1 - distance * 0.2);
   };
 
-  const visibleMedia = [];
-  const visibleIndexes = [];
-  for (let i = selectedIndex - 3; i <= selectedIndex + 3; i++) {
-    const wrappedIndex = (i + media.length) % media.length;
-    visibleMedia.push(media[wrappedIndex]);
-    visibleIndexes.push(wrappedIndex);
-  }
+  // Memoize visible media and indexes
+  const { visibleMedia, visibleIndexes } = useMemo(() => {
+    const visibleMedia = [];
+    const visibleIndexes = [];
+    for (let i = selectedIndex - 3; i <= selectedIndex + 3; i++) {
+      const wrappedIndex = (i + media.length) % media.length;
+      visibleMedia.push(media[wrappedIndex]);
+      visibleIndexes.push(wrappedIndex);
+    }
+    return { visibleMedia, visibleIndexes };
+  }, [media, selectedIndex]);
 
   const handleItemClick = (visibleIndex) => {
-    // Get the actual media index for the clicked item
     const actualIndex = visibleIndexes[visibleIndex];
 
-    // If clicking the currently selected item, toggle popup
     if (actualIndex === selectedIndex) {
       setShowPopup(!showPopup);
     }
 
-    // Update the selected index and current media item
     setSelectedIndex(actualIndex);
     setCurrentMediaItem(media[actualIndex]);
 
-    // Reset hover state to the newly selected index
     const uniqueHoverKey = `${actualIndex}_${visibleIndex}`;
     setHoveredIndex(uniqueHoverKey);
   };
@@ -129,15 +133,11 @@ const CarouselComponent = ({ mediaNames }) => {
   };
 
   const calculateSelectedScale = (carouselIndex, visibleIndex) => {
-    // Find the index of the centered item in visibleIndexes
     const centerIndex = Math.floor(visibleIndexes.length / 2);
-    
-    // Check if this specific item is the centered item matching the selected index
     return (carouselIndex === selectedIndex && visibleIndex === centerIndex) ? 1.175 : 1;
   };
 
   const calculateHoveredScale = (carouselIndex, visibleIndex) => {
-    // Create a unique hover key for comparison
     const uniqueHoverKey = `${carouselIndex}_${visibleIndex}`;
     return hoveredIndex === uniqueHoverKey ? 1.125 : 1;
   };
@@ -145,7 +145,7 @@ const CarouselComponent = ({ mediaNames }) => {
   return (
     <div className="position-relative d-flex justify-content-center align-items-center" style={{ width: '100%', height: 475, overflow: 'visible' }}>
       <div className="position-absolute start-0 top-50 translate-middle-y z-3" style={{ left: '20px' }}>
-        <button className="btn btn-light rounded-circle shadow d-flex justify-content-center align-items-center" onClick={() => handleArrowClick('right')}
+        <button className="btn btn-light rounded-circle shadow d-flex justify-content-center align-items-center" onClick={() => handleArrowClick('left')}
           style={{
             width: '40px',
             height: '40px',

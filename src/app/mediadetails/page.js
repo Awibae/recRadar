@@ -8,9 +8,9 @@ import { useAtom } from "jotai";
 import { useSearchParams } from "next/navigation";
 import LogoComponent from "../components/logo/LogoComponent";
 import StarRatingComponent from "../components/starrating/StarRatingComponent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
-export default function Home() {
+function MediaDetails() {
   const [media, setMedia] = useAtom(mediaAtom);
   const [showRatingPopup, setShowRatingPopup] = useState(false);
   const [temporaryRating, setTemporaryRating] = useState(0);
@@ -343,6 +343,17 @@ export default function Home() {
   );
 }
 
+export default function Home() {
+  return (
+    <>
+      <NavBarComponent />
+      <Suspense fallback={<div>Loading...</div>}>
+        <MediaDetails />
+      </Suspense>
+    </>
+  );
+}
+
 const tableStyles = {
   header: {
     fontWeight: 600,
@@ -357,3 +368,4 @@ const tableStyles = {
     verticalAlign: "bottom",
   },
 };
+

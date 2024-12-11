@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import StarRatingComponent from '../starrating/StarRatingComponent';
 import { useAtom } from 'jotai';
@@ -7,13 +7,13 @@ import { mediaAtom } from "@/app/atomStore";
 import { useRouter } from 'next/navigation';
 
 const MediaGridComponent = ({ media }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [hoveredItem, setHoveredItem] = useState(null);
+  const router = useRouter();
+  const [mediaState, setMediaState] = useAtom(mediaAtom);
   const popupRef = useRef(null);
   const itemRefs = useRef({});
 
-  const [mediaState, setMediaState] = useAtom(mediaAtom);
-  const router = useRouter();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   // Click outside handler
   useEffect(() => {
@@ -74,11 +74,14 @@ const MediaGridComponent = ({ media }) => {
     setHoveredItem(null);
   };
 
-  // Calculate grid rows
-  const gridRows = [];
-  for (let i = 0; i < media.length; i += 5) {
-    gridRows.push(media.slice(i, i + 5));
-  }
+  // Memoize grid rows to prevent unnecessary recalculations
+  const gridRows = useMemo(() => {
+    const rows = [];
+    for (let i = 0; i < media.length; i += 5) {
+      rows.push(media.slice(i, i + 5));
+    }
+    return rows;
+  }, [media]);
 
   return (
     <div className="container-fluid d-flex justify-content-center align-items-center">

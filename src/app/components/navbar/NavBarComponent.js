@@ -40,9 +40,6 @@ const NavBarComponent = () => {
                         <li className="nav-item px-2 d-flex align-items-center">
                             <Link legacyBehavior href="/mylist" passHref><a className="nav-link" style={{ fontWeight: 400, fontSize: 24, color: "#f2f2f2" }}>My List</a></Link>
                         </li>
-                        <li className="nav-item px-2 d-flex align-items-center">
-                            <Link legacyBehavior href="/account" passHref><a className="nav-link" style={{ fontWeight: 400, fontSize: 24, color: "#f2f2f2" }}>Account</a></Link>
-                        </li>
                         <li className="nav-item px-2 d-flex align-items-center justify-content-center" style={{ height: "70px", width: 350 }}>
                             <form className="d-flex align-items-center justify-content-end" style={{ width: "90%" }} onSubmit={handleSubmit}>
                                 <input
