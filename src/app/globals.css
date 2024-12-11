@@ -1,0 +1,102 @@
+/* Set the default font for the entire site */
+html, body {
+  font-family: var(--font-sarabun), sans-serif;
+}
+
+.heading-bold {
+  font-family: var(--font-sarabun), sans-serif;
+  font-weight: 700; /* Bold weight override */
+}
+
+.gradient-background {
+  height: 100%;
+  background: linear-gradient(to bottom, #213a57, #0b6477);
+  color: #f2f2f2;
+}
+
+.blank-background {
+  color: #f2f2f2;
+}
+
+.btn-gradient {
+  background: linear-gradient(to bottom, #45dfb1, #14919b);
+  border: none;
+  color: #f2f2f2;
+  filter: drop-shadow(#00000010 4px 4px 4px);
+}
+
+.btn-gradient:hover {
+  filter: brightness(85%) drop-shadow(#00000010 4px 4px 4px);
+}
+
+.btn-gradient:active {
+  filter: brightness(75%) drop-shadow(#00000010 4px 4px 4px);
+}
+
+.searchbox {
+  background-color: #0B6477 ;
+  border: none;
+  color: #f2f2f2;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.searchbox::placeholder {
+  color: #f2f2f2;
+  opacity: 40%;
+}
+
+.searchbox:focus {
+  background-color: #0B6477 ;
+  color: #f2f2f2;
+}
+
+.commentbox {
+  background-color: #0B6477 ;
+  border: none;
+  color: #f2f2f2;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.commentbox::placeholder {
+  color: #f2f2f2;
+  opacity: 40%;
+}
+
+.commentbox:focus {
+  background-color: #0B6477 ;
+  color: #f2f2f2;
+}
+
+.gradient-stroke {
+  background: linear-gradient(to right, #45dfb1, #0ad1c8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section {
+  padding: 4rem 2rem;
+}
+
+.section-title {
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, 
+    #213a57e6, 
+    #1F8F8B5A, 
+    #45DFB10D, 
+    #1F8F8B5A, 
+    #213A57e6);
+  z-index: 1;
+}
