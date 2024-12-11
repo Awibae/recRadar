@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import { mediaAtom } from "./atomStore";
 import FooterComponent from "./components/footer/FooterComponent";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
   const [media, setMedia] = useAtom(mediaAtom);
@@ -35,9 +36,9 @@ export default function Home() {
             <h1 style={{ fontWeight: 700, fontSize: 54 }}>Discover Your Next Favorite Movie, Show, or Book!</h1>
             <p style={{ fontWeight: 400, fontSize: 26 }}>Get personalized recommendations based on your interests.</p>
             <div className="justify-content-left gap-2 my-4" onSubmit={handleSubmit}>
-              <button className="btn btn-gradient px-4 py-4" style={{ borderRadius: 15 }}>
+            <Link legacyBehavior href="/films" passHref><a className="nav-link" style={{ fontWeight: 400, fontSize: 24, color: "#f2f2f2" }}><button className="btn btn-gradient px-4 py-4" style={{ borderRadius: 15 }}>
                 <span style={{ fontWeight: 600, fontSize: 28 }}>View Your Discovery Queue</span>
-              </button>
+              </button></a></Link>
             </div>
             <p style={{ fontWeight: 400, fontSize: 26 }}>Have something in mind?</p>
             <form onSubmit={handleSubmit}>

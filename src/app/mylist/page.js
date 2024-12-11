@@ -7,36 +7,52 @@ import GridComponent from "../components/grid/GridComponent";
 import { mediaAtom } from "../atomStore";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function MyListPage() {
-    const [media, setMedia] = useAtom(mediaAtom);
-    let highPriorityCarousel = ["Better Call Saul", "Gladiator II", "1984", "The Hobbit", "Breaking Bad", "Conclave", "Deadpool",]
+  const [media, setMedia] = useAtom(mediaAtom);
+  const highPriorityCarousel = ["Better Call Saul", "Gladiator II", "1984", "The Hobbit", "Breaking Bad", "Conclave", "Deadpool"];
 
-    const router = useRouter();
-    const [filterText, setFilterText] = useState("");
+  const router = useRouter();
+  const [filterText, setFilterText] = useState("");
 
-    const handleViewHistory = () => {
-      router.push("/history");
-    };
+  const [filteredMovies, setFilteredMovies] = useState([]);
+  const [filteredShows, setFilteredShows] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
-    const filteredMovies = media.filter((mediaItem) => {
-      if (mediaItem.onWatchlist && mediaItem.mediaType === "movie") {
-        return mediaItem;
-      }
-    });
+  const handleViewHistory = () => {
+    router.push("/history");
+  };
 
-    const filteredShows = media.filter((mediaItem) => {
-      if (mediaItem.onWatchlist && mediaItem.mediaType === "tv") {
-        return mediaItem;
-      }
-    });
+  useEffect(() => {
+    // Filter movies
+    setFilteredMovies(
+      media.filter((mediaItem) =>
+        mediaItem.onWatchlist &&
+        mediaItem.mediaType === "movie" &&
+        mediaItem.title.toLowerCase().includes(filterText.toLowerCase())
+      )
+    );
 
-    const filteredBooks = media.filter((mediaItem) => {
-      if (mediaItem.onWatchlist && mediaItem.mediaType === "book") {
-        return mediaItem;
-      }
-    });
+    // Filter shows
+    setFilteredShows(
+      media.filter((mediaItem) =>
+        mediaItem.onWatchlist &&
+        mediaItem.mediaType === "tv" &&
+        mediaItem.title.toLowerCase().includes(filterText.toLowerCase())
+      )
+    );
+
+    // Filter books
+    setFilteredBooks(
+      media.filter((mediaItem) =>
+        mediaItem.onWatchlist &&
+        mediaItem.mediaType === "book" &&
+        mediaItem.title.toLowerCase().includes(filterText.toLowerCase())
+      )
+    );
+  }, [filterText, media]); // Re-run this effect whenever `filterText` or `media` changes
+
   return (
     <>
       <NavBarComponent />
@@ -44,38 +60,37 @@ export default function MyListPage() {
       <div className="blank-background" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div className="container-fluid pt-5 flex-grow-1" style={{ overflowX: "hidden", padding: 0 }}>
 
-            <div className="row d-flex align-items-center justify-content-center" style={{ margin: "0 8%", marginTop: "100px" }}>
-                <div className="col-3 d-flex justify-content-end">
-                    <span style={{ fontWeight: 700, fontSize: 42 }}>My List</span>
-                </div>
-                <div className="col-6 d-flex justify-content-center">
-                            <input
-                                type="text"
-                                placeholder="Filter List"
-                                value={filterText}
-                                onChange={(e) => setFilterText(e.target.value)}
-                                className="form-control searchbox py-3"
-                                style={{
-                                    fontSize: 20
-                                }}
-                                
-                            />
-                        </div>
-                        <div className="col-3 d-flex justify-content-start">
-                            <span
-                                onClick={handleViewHistory}
-                                style={{
-                                    fontWeight: 500,
-                                    fontSize: 18,
-                                    cursor: "pointer",
-                                    textDecoration: "underline",
-                                    color: "#45DFB1",
-                                }}
-                            >
-                                View History
-                            </span>
-                        </div>
+          <div className="row d-flex align-items-center justify-content-center" style={{ margin: "0 8%", marginTop: "100px" }}>
+            <div className="col-3 d-flex justify-content-end">
+              <span style={{ fontWeight: 700, fontSize: 42 }}>My List</span>
             </div>
+            <div className="col-6 d-flex justify-content-center">
+              <input
+                type="text"
+                placeholder="Filter List"
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                className="form-control searchbox py-3"
+                style={{
+                  fontSize: 20
+                }}
+              />
+            </div>
+            <div className="col-3 d-flex justify-content-start">
+              <span
+                onClick={handleViewHistory}
+                style={{
+                  fontWeight: 500,
+                  fontSize: 18,
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  color: "#45DFB1",
+                }}
+              >
+                View History
+              </span>
+            </div>
+          </div>
 
           <div className="row d-flex flex-column align-items-center py-5" style={{ margin: "0 8%" }}>
             <h2 style={{ fontWeight: 700, fontSize: 34, textAlign: "center" }}>High Priority</h2>
@@ -85,7 +100,7 @@ export default function MyListPage() {
             <CarouselComponent mediaNames={highPriorityCarousel} />
           </div>
 
-          <div className="row d-flex flex-column align-items-center py-5" style={{ margin: "0 8%"}}>
+          <div className="row d-flex flex-column align-items-center py-5" style={{ margin: "0 8%" }}>
             <h2 style={{ fontWeight: 700, fontSize: 34, textAlign: "center", marginBottom: "35px" }}>My Movies</h2>
             <GridComponent media={filteredMovies} />
           </div>
